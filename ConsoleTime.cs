@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -14,7 +15,7 @@ namespace BookConverter
     // https://developer.mozilla.org/en-US/docs/Web/API/Console/time
     static class ConsoleTime
     {
-        static private Dictionary<string, Stopwatch> timers = new Dictionary<string, Stopwatch>();
+        static private ConcurrentDictionary<string, Stopwatch> timers = new ConcurrentDictionary<string, Stopwatch>();
         const string defaultName = @"¯\_(ツ)_/¯";
 
         public static void Start(string name = defaultName)
@@ -28,10 +29,16 @@ namespace BookConverter
         {
             if (!timers.ContainsKey(name)) throw new Exception("такого таймера у нас ещё нет");
             timers[name].Stop();
-            Console.ForegroundColor = ConsoleColor.DarkGreen;
-            Console.WriteLine($"{name}: {timers[name].Elapsed} ({timers[name].ElapsedMilliseconds / 1000.0} sec)");
-            Console.ResetColor();
-            timers.Remove(name);
+
+            lock (Console.Out)
+            {
+                if (char.IsUpper(name[0])) Console.ForegroundColor = ConsoleColor.DarkGreen;
+                else Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                Console.WriteLine($"{name}: {timers[name].Elapsed} ({timers[name].ElapsedMilliseconds / 1000.0} sec)");
+                Console.ResetColor();
+            }
+
+            timers.Remove(name, out Stopwatch _);
         }
     }
 }

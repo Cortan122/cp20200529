@@ -14,7 +14,32 @@ namespace BookConverter
 {
     static class Program
     {
-        static private async Task Main()
+        /// <summary>
+        /// Запускает MainTask() и предлогает пользователю повторить.
+        /// </summary>
+        static async Task Main()
+        {
+            while (true)
+            {
+                try
+                {
+                    await MainTask();
+                }
+                catch (Exception e)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    Console.WriteLine($"поизашёл эксепшен: {e.Message}");
+                    Console.ResetColor();
+                }
+
+                // if Console.IsOutputRedirected is True Console.ReadKey() throws an exeption
+                if (Console.IsOutputRedirected) return;
+                Console.WriteLine("Нажмите Enter чтобы повторить");
+                if (Console.ReadKey(true).Key != ConsoleKey.Enter) break;
+            }
+        }
+
+        static private async Task MainTask()
         {
             await Downloader.GetBooks();
             var files = Directory.EnumerateFiles("books", "*.txt", SearchOption.AllDirectories);

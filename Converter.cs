@@ -76,11 +76,17 @@ namespace BookConverter
 
         public static void Koi7ifyFile(string path)
         {
+            var name = Path.GetFileName(path);
+            ConsoleTime.Start("file " + name);
+
             var str1 = File.ReadAllText(path);
             var str2 = Koi7ify(str1);
-            var newFilename = Path.Combine(Path.GetDirectoryName(path), "new_" + Path.GetFileName(path));
+
+            var newFilename = Path.Combine(Path.GetDirectoryName(path), "new_" + name);
             File.WriteAllText(newFilename, str2);
-            Console.WriteLine($"{Path.GetFileName(path)}: {str1.Length} -> {str2.Length}");
+
+            Console.WriteLine($"{name}: {str1.Length} -> {str2.Length}");
+            ConsoleTime.End("file " + name);
         }
     }
 }
