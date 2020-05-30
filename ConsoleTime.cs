@@ -20,7 +20,7 @@ namespace BookConverter
 
         public static void Start(string name = defaultName)
         {
-            if (timers.ContainsKey(name)) throw new Exception("такой таймер у нас уже есть");
+            // if (timers.ContainsKey(name)) throw new Exception("такой таймер у нас уже есть");
             timers[name] = new Stopwatch();
             timers[name].Start();
         }
